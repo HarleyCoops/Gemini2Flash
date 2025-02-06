@@ -42,6 +42,66 @@ This project comprises the following key components, each playing a vital role i
 
     This file contains detailed instructions and best practices for using the Gemini API effectively, with a particular focus on tool usage and optimization for Gemini 2 Flash.  Consult this file for tips on prompt engineering, tool definition, and troubleshooting.
 
+## Enhanced Agent Capabilities with Smolagents
+
+This project leverages `smolagents`, a powerful framework for building and managing AI agents. Here's how smolagents enhances our Gemini implementation:
+
+### Multi-Step Agent Architecture
+
+The integration uses smolagents' multi-step agent architecture, which enables:
+
+- **Strategic Task Decomposition**: Agents break down complex tasks into manageable subtasks
+- **Tool Integration**: Seamless integration with various tools and APIs
+- **Memory Management**: Efficient handling of conversation context and previous actions
+- **Error Recovery**: Robust error handling and retry mechanisms
+
+### Available Agent Types
+
+1. **CodeAgent**: Writes tool calls in Python code format
+   - More flexible and composable than JSON
+   - Better object management
+   - Leverages existing code patterns in LLM training data
+
+2. **ToolCallingAgent**: Uses JSON-like tool calls
+   - Simpler structure for basic tasks
+   - Direct integration with API tool calling capabilities
+
+### Tool Management
+
+The project includes a sophisticated tool registry system that:
+
+- Manages available functions and their implementations
+- Documents tool purposes and parameters
+- Provides error handling and validation
+- Enables dynamic tool loading and configuration
+
+### Key Features
+
+- **Asynchronous Operations**: Support for async/await patterns
+- **Planning Capabilities**: Periodic planning steps for better task management
+- **Telemetry**: Integration with OpenTelemetry for monitoring and debugging
+- **Extensibility**: Easy addition of new tools and capabilities
+
+### Example Usage
+
+```python
+from smolagents import CodeAgent, HfApiModel
+from function_registry import registry
+
+# Initialize the agent
+model = HfApiModel("Qwen/Qwen2.5-Coder-32B-Instruct")
+agent = CodeAgent(
+    tools=[registry.get_tool("web_search"), registry.get_tool("calculate")],
+    model=model,
+    add_base_tools=True
+)
+
+# Run a task
+result = await agent.run(
+    "Research the latest developments in quantum computing and calculate their potential impact"
+)
+```
+
 ## Getting Started: From Zero to Gemini Hero
 
 Follow these steps to get up and running with the Gemini Powerhouse:

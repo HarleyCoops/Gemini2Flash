@@ -1,12 +1,14 @@
 import os
 import json
-import requests
+import asyncio
+import aiohttp
 from dotenv import load_dotenv
 from gemini_api import GeminiAPIWrapper
+from tools import web_search, calculate, web_scraper, summarize_text
 
 load_dotenv()  # Load environment variables from .env file
 
-def test_gemini_api_wrapper():
+async def test_gemini_api_wrapper():
     """
     Tests the GeminiAPIWrapper class.  Demonstrates different use cases including tools.
     """
@@ -15,12 +17,12 @@ def test_gemini_api_wrapper():
 
     # Test case 1: Basic prompt
     prompt = "What is the capital of France?"
-    result = gemini_api.call_gemini_api(prompt=prompt)
+    result = await gemini_api.call_gemini_api(prompt=prompt)
     print(f"Test 1 Result: {result}")
 
     # Test case 2: With different prompt & model. Note API is initalized to gemini-2.0-flash;  no change is needed to the object to test flash
     prompt = "What is the meaning of life?"
-    result = gemini_api.call_gemini_api(prompt=prompt) #already using flash due to initialization
+    result = await gemini_api.call_gemini_api(prompt=prompt) #already using flash due to initialization
     print(f"Test 2 Result: {result}")
 
 
@@ -51,7 +53,7 @@ def test_gemini_api_wrapper():
     # Example of crafting the structured payload correctly (critical for tool use):
     # Properly format the prompt as a turn in a conversation
 
-    result = gemini_api.call_gemini_api(prompt=prompt, tools=tools)
+    result = await gemini_api.call_gemini_api(prompt=prompt, tools=tools)
     print(f"Test 3 Result (Tool Use, Web Search): {result}")
 
     #If tool call was successful (is not none), take tool and put that output back into gemini
@@ -70,14 +72,14 @@ def test_gemini_api_wrapper():
 
 
        # Fake Web Search implementation for testing -- REPLACE THIS WITH ACTUAL TOOL
-       def fake_web_search(query):
+       async def fake_web_search(query):
             print("Executing (fake) web search for query:", query)
             if "weather" in query.lower() and "london" in query.lower():
                 return "The current weather in London is 15 degrees Celsius and sunny."
             else:
                 return "No relevant information found."
 
-       web_search_results = fake_web_search(tool_query)  #Use web_search_query
+       web_search_results = await fake_web_search(tool_query)  #Use web_search_query
 
        # Package the results back for Gemini
        tool_response = {
@@ -92,7 +94,7 @@ def test_gemini_api_wrapper():
 
        #This final API Call returns the FULL answer, using knowledge and framing we provided.   NO tools included (they were ALREADY USED)
 
-       final_result = gemini_api.call_gemini_api(prompt=second_prompt, tools=None)
+       final_result = await gemini_api.call_gemini_api(prompt=second_prompt, tools=None)
 
        print(f"Final result of Re-invocation for synthesis and framing by model: {final_result}")
 
@@ -100,4 +102,4 @@ def test_gemini_api_wrapper():
        print("No function call detected, skipping the response and secondary invokation.")
 
 if __name__ == "__main__":
-    test_gemini_api_wrapper()
+    asyncio.run(test_gemini_api_wrapper())
