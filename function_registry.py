@@ -1,5 +1,5 @@
 from typing import Callable, Dict, Any
-from tools import web_search, calculate, web_scraper, summarize_text  # Import your tool functions here
+from tools import web_search, calculate, web_scraper, summarize_text, deepseek_chat  # Import your tool functions here
 
 FunctionType = Callable[[Dict[str, Any]], str]
 
@@ -38,3 +38,12 @@ registry.register_function("web_search", web_search, description="Searches the w
 registry.register_function("calculate", calculate, description="Calculates a mathematical expression.", parameters={"expression": "The mathematical expression to calculate"})
 registry.register_function("web_scraper", web_scraper, description="Scrapes the content of a webpage.", parameters={"url": "The URL of the webpage to scrape"})
 registry.register_function("summarize_text", summarize_text, description="Summarizes the given text.", parameters={"text": "The text to be summarized"})
+registry.register_function(
+    "deepseek_chat",
+    deepseek_chat,
+    description="Makes a call to the DeepSeek API to get AI-generated responses.",
+    parameters={
+        "prompt": "The text prompt to send to DeepSeek",
+        "model": "The model to use ('deepseek-chat' for V3 or 'deepseek-reasoner' for R1)"
+    }
+)

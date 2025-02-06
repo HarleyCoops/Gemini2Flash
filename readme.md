@@ -102,6 +102,73 @@ result = await agent.run(
 )
 ```
 
+## SmolAgent: A Lightweight Tool-Augmented Assistant
+
+The SmolAgent is a lightweight yet powerful implementation that demonstrates the practical application of tool-augmented AI using the Gemini API. It serves as a bridge between natural language requests and concrete actions through its tool integration capabilities.
+
+### Core Features
+
+* **Asynchronous Design:** Built with modern async/await patterns for optimal performance
+* **Tool Registry Integration:** Seamlessly connects with the function registry for dynamic tool discovery
+* **Safe Calculation Engine:** Implements secure mathematical operations using Python's ast module
+* **Web Interaction:** Includes web search, scraping, and content summarization capabilities
+* **Natural Language Processing:** Intelligently interprets user requests and selects appropriate tools
+* **Error Handling:** Robust error recovery and informative feedback
+
+### Architecture
+
+The SmolAgent comprises several key components:
+
+1. **GeminiAPIWrapper Integration:**
+   * Optimized for Gemini 2 Flash
+   * Handles API authentication and request formatting
+   * Manages response parsing and error handling
+
+2. **Tool Management:**
+   * Dynamic tool discovery from function registry
+   * Automatic tool description generation
+   * Parameter validation and type checking
+
+3. **Request Processing Pipeline:**
+   * Natural language understanding
+   * Tool selection and execution
+   * Result synthesis and formatting
+
+### Example Usage
+
+```python
+from smol_agent import SmolAgent
+import asyncio
+
+async def main():
+    # Initialize the agent
+    agent = SmolAgent()
+    
+    # Process different types of requests
+    requests = [
+        "Calculate 15 * 24 + 3",  # Mathematical operations
+        "Search for the latest AI news",  # Web search
+        "Summarize https://example.com",  # Web scraping
+    ]
+    
+    for request in requests:
+        response = await agent.process_request(request)
+        print(f"Request: {request}\nResponse: {response}\n")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Extending SmolAgent
+
+The SmolAgent is designed for extensibility. You can add new tools by:
+
+1. Implementing the tool function in `tools.py`
+2. Registering it in the function registry
+3. The agent will automatically discover and incorporate new tools
+
+This architecture makes it easy to expand the agent's capabilities while maintaining a clean and maintainable codebase.
+
 ## Getting Started: From Zero to Gemini Hero
 
 Follow these steps to get up and running with the Gemini Powerhouse:
