@@ -2,7 +2,7 @@ import requests
 import json
 
 # Define the API endpoint
-api_url = "http://localhost:8000/v1/chat/completions"
+api_url = "http://127.0.0.1:8000/v1/chat/completions"
 
 # Define the request payload
 payload = {
