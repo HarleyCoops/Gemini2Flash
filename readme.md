@@ -225,6 +225,19 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
 Contributions are welcome! Please feel free to submit pull requests or open issues to suggest improvements or report bugs.
 
+## Next Steps: Resolving Dependency Conflicts with vLLM
+
+We are currently working on integrating vLLM for faster inference. However, we've encountered several dependency conflicts, primarily related to incompatible versions of NumPy and other libraries.
+
+Here's a summary of the steps we've taken:
+
+1.  Attempted to install vLLM directly using `pip install vllm`.
+2.  Encountered TensorFlow-related ImportErrors.
+3.  Tried explicitly specifying the PyTorch framework.
+4.  Attempted to upgrade and downgrade NumPy to resolve version conflicts.
+
+The current approach involves using a Dockerfile to create an isolated environment with the correct versions of all necessary libraries. This should provide a more reliable and reproducible setup for running vLLM.
+
 ## Acknowledgements
 
 This project was inspired by the amazing work of the Google AI team and the vibrant community of AI developers. We are grateful for their contributions to the field.
