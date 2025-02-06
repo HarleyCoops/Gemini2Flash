@@ -1,5 +1,5 @@
 from typing import Callable, Dict, Any
-from tools import web_search, calculate, web_scraper, summarize_text, deepseek_chat  # Import your tool functions here
+from tools import web_search, calculate, web_scraper, summarize_text, deepseek_chat, huggingface_tool  # Import your tool functions here
 
 FunctionType = Callable[[Dict[str, Any]], str]
 
@@ -45,5 +45,13 @@ registry.register_function(
     parameters={
         "prompt": "The text prompt to send to DeepSeek",
         "model": "The model to use ('deepseek-chat' for V3 or 'deepseek-reasoner' for R1)"
+    }
+)
+registry.register_function(
+    "huggingface_tool",
+    huggingface_tool,
+    description="Runs inference using a Hugging Face model.",
+    parameters={
+        "prompt": "The prompt to send to the Hugging Face model"
     }
 )

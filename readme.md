@@ -169,6 +169,94 @@ The SmolAgent is designed for extensibility. You can add new tools by:
 
 This architecture makes it easy to expand the agent's capabilities while maintaining a clean and maintainable codebase.
 
+## Qwen2 Model Integration: Fine-tuned Model Access
+
+This codebase includes support for Qwen2-based fine-tuned models through the Hugging Face Inference API. The integration is implemented in two layers:
+
+### Direct Inference Layer (`huggingface_inference.py`)
+```python
+def generate_text(prompt, model_name="HarleyCooper/GRPOtuned", max_length=50):
+    """
+    Generate text using Hugging Face's Inference API with Qwen2 parameters
+    """
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_new_tokens": max_length,
+            "do_sample": True,
+            "temperature": 0.7,
+            "top_p": 0.9,
+            "return_full_text": False,
+            "stop": ["</s>"]  # Qwen2 end token
+        }
+    }
+```
+
+### SmolAgent Tool Integration (`tools.py`)
+```python
+def huggingface_tool(prompt: str) -> str:
+    """
+    Runs inference using a Hugging Face model via SmolAgent tool system
+    """
+    try:
+        command = ["python", "huggingface_inference.py", prompt]
+        process = subprocess.run(command, capture_output=True, text=True, timeout=60)
+        process.check_returncode()
+        return process.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error running Hugging Face inference: {e.stderr}"
+```
+
+### Key Features of the Qwen Integration:
+
+1. **Optimized Parameters**: 
+   - Configured specifically for Qwen2 architecture
+   - Uses appropriate sampling parameters (temperature: 0.7, top_p: 0.9)
+   - Handles Qwen2-specific tokens like `</s>`
+
+2. **Two-Level Architecture**:
+   - Direct API access through `huggingface_inference.py`
+   - Tool-based access through SmolAgent's function registry
+
+3. **Error Handling**:
+   - Robust error handling at both API and tool levels
+   - Timeouts to prevent hanging operations
+   - Clear error messages for debugging
+
+### Using the Qwen Integration
+
+1. **Direct Usage**:
+```python
+from huggingface_inference import generate_text
+
+response = generate_text("Your prompt here")
+print(response)
+```
+
+2. **Via SmolAgent**:
+```python
+from smol_agent import SmolAgent
+
+agent = SmolAgent()
+response = await agent.process_request(
+    "Use Hugging Face to generate a response about: Your topic"
+)
+```
+
+### Implementation Notes
+
+- The integration uses the Hugging Face Inference API rather than local model loading
+- Token management is handled through environment variables
+- Response formatting is optimized for Qwen2's output structure
+- The tool integration provides a bridge between SmolAgent's tool system and the Hugging Face API
+
+### Limitations and Considerations
+
+- API rate limits apply to inference requests
+- Response times may vary based on model load
+- Token context length is limited by the model's configuration
+- Error handling assumes specific response formats
+
 ## Getting Started: From Zero to Gemini Hero
 
 Follow these steps to get up and running with the Gemini Powerhouse:

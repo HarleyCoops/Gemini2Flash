@@ -100,8 +100,7 @@ async def main():
     
     # Example requests that demonstrate different tool usage scenarios
     requests = [
-        "Use DeepSeek to create a short joke. Think about what makes a good joke - setup, punchline, and wordplay - then create one.",  # Test DeepSeek-V3 with creative reasoning
-        "Use DeepSeek Reasoner to solve this puzzle step by step: If today is Monday, what day was it two days ago? Show your calendar reasoning.",  # Test DeepSeek-R1 with explicit reasoning steps
+        "Use Hugging Face to generate a story about a cat",  # Test Hugging Face inference
     ]
     
     for request in requests:

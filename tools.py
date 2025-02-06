@@ -18,11 +18,11 @@ def process_stream(response):
                     line_text = line.decode('utf-8')
                     if line_text.startswith('data: '):
                         line_text = line_text[6:]
-                    
+
                     # Skip [DONE] message
                     if line_text == '[DONE]':
                         continue
-                        
+
                     json_line = json.loads(line_text)
                     if 'choices' in json_line and json_line['choices']:
                         content = json_line['choices'][0].get('delta', {}).get('content', '')
@@ -38,18 +38,18 @@ def process_stream(response):
 def deepseek_chat(prompt: str, model: str = "deepseek-chat") -> str:
     """
     Makes a call to the DeepSeek API using OpenAI-compatible format and logs the interaction.
-    
+
     Args:
         prompt: The text prompt to send to DeepSeek
         model: The model to use ('deepseek-chat' for V3 or 'deepseek-reasoner' for R1)
-        
+
     Returns:
         The model's response as a string
     """
     api_key = os.environ.get("DeepSeek_API_Key")
     if not api_key:
         return "Error: DEEPSEEK_API_KEY not found in environment variables"
-    
+
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}"
@@ -70,18 +70,18 @@ def deepseek_chat(prompt: str, model: str = "deepseek-chat") -> str:
             "temperature": 0.7,  # Add some randomness for creative thinking
             "max_tokens": 1000  # Ensure we get a full response
         }
-        
+
         response = requests.post(
             "https://api.deepseek.com/v1/chat/completions",
             headers=headers,
             json=stream_data,
-            timeout=60,
+            timeout=90,  # Increased timeout
             stream=True
         )
-        
+
         train_of_thought = process_stream(response)
         print("\n")  # Add newline after train of thought
-                
+
         # Now get the final answer
         print("Getting final answer...")
         final_data = {
@@ -92,22 +92,26 @@ def deepseek_chat(prompt: str, model: str = "deepseek-chat") -> str:
                 {"role": "assistant", "content": train_of_thought},
                 {"role": "user", "content": "Now provide a clear and concise final answer based on your reasoning."}
             ],
-            "stream": True,
+            "stream": False,
             "temperature": 0.3,  # Lower temperature for more focused final answer
             "max_tokens": 500  # Shorter limit for final answer
         }
-        
+
         final_response = requests.post(
             "https://api.deepseek.com/v1/chat/completions",
             headers=headers,
             json=final_data,
-            timeout=60,
-            stream=True
+            timeout=90  # Increased timeout
         )
-        
-        final_answer = process_stream(final_response)
-        print("\n")  # Add newline after final answer
-        
+
+        if final_response.status_code != 200:
+            error_detail = final_response.json() if final_response.text else "No error details available"
+            error_msg = f"Error calling DeepSeek API (Status {final_response.status_code}): {error_detail}"
+            final_answer = None
+        else:
+            final_result = final_response.json()
+            final_answer = final_result["choices"][0]["message"]["content"]
+
         # Only log as successful if we have both train of thought and final answer
         success = bool(train_of_thought and final_answer)
         log_entry = {
@@ -120,12 +124,12 @@ def deepseek_chat(prompt: str, model: str = "deepseek-chat") -> str:
             "final_answer": final_answer if final_answer else None,
             "success": success
         }
-        
+
         with open('deepseek_calls.jsonl', 'a', encoding='utf-8') as f:
             f.write(json.dumps(log_entry) + '\n')
-        
+
         return final_answer
-        
+
     except requests.exceptions.RequestException as e:
         error_msg = f"Error calling DeepSeek API: {str(e)}\nTrain of thought captured so far: {train_of_thought if train_of_thought else 'None'}"
         # Log error to JSONL file
@@ -161,17 +165,38 @@ def deepseek_chat(prompt: str, model: str = "deepseek-chat") -> str:
             f.write(json.dumps(log_entry) + '\n')
         return error_msg
 
-def web_search(query: str) -> str:
-    """Searches the web and returns a summarized snippet of results."""
+import subprocess
+
+def huggingface_tool(prompt: str) -> str:
+    """
+    Runs inference using a Hugging Face model.
+    """
     try:
-        # Replace with your preferred search API (e.g., Google Search API, DuckDuckGo API)
-        # The following is a placeholder and won't work without API keys and setup
-        # For demonstration, we'll just return a static response
-        # res = requests.get(f'https://api.example.com/search?q={query}')
-        # results = res.json()
-        results = f'Search results for {query}: This is a simulated response.' # TODO
-        return results
+        command = ["python", "huggingface_inference.py", prompt]
+        process = subprocess.run(command, capture_output=True, text=True, timeout=60)
+        process.check_returncode()
+        return process.stdout
+    except subprocess.CalledProcessError as e:
+        return f"Error running Hugging Face inference: {e.stderr}"
+    except subprocess.TimeoutExpired:
+        return "Error: Hugging Face inference timed out."
     except Exception as e:
+        return f"Error during Hugging Face inference: {e}"
+
+def web_search(query: str) -> str:
+    """Searches DuckDuckGo and returns a summarized snippet of results."""
+    try:
+        response = requests.get("https://api.duckduckgo.com/", params={
+            'q': query,
+            'format': 'json'
+        })
+        response.raise_for_status()
+        ddg_data = response.json()
+        summary = ddg_data.get("AbstractText")
+        if not summary:
+            return f"No results found for '{query}'."
+        return summary
+    except requests.exceptions.RequestException as e:
         return f'Error during web search: {e}'
 
 def calculate(expression: str) -> str:
@@ -212,7 +237,7 @@ def calculate(expression: str) -> str:
         tree = ast.parse(expression, mode='eval')
         if not isinstance(tree.body, (ast.BinOp, ast.Num, ast.UnaryOp)):
             raise ValueError("Invalid expression: only basic arithmetic operations are supported")
-        
+
         # Evaluate the expression
         result = eval_expr(tree.body)
         return str(result)
