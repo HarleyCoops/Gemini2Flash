@@ -1,0 +1,80 @@
+These instructions detail how to use the Gemini API with enhanced tool use and efficiency, optimized for Gemini 2 Flash.
+
+1.  Set up API Key:
+    *   Set the GEMINI_API_KEY environment variable to your Google AI Studio API key. Use a .env file or set it directly in your environment.
+    *   Example .env file:
+        ```
+        GEMINI_API_KEY=YOUR_API_KEY
+        ```
+
+2.  Install Required Libraries:
+    ```
+    pip install requests python-dotenv
+    ```
+
+3.  Create a GeminiAPIWrapper Class:
+    *   Create a class named GeminiAPIWrapper to encapsulate the API interaction logic.
+    *   Include the following methods:
+        *   `__init__(self, api_key=None, model_name="gemini-2.0-flash", max_retries=3)`: Initializes the class with the API key, model name, and maximum number of retries.
+        *   `_make_api_request(self, payload)`: Makes the API request with retry logic.
+        *   `call_gemini_api(self, prompt, tools=None, temperature=0.0, top_p=1.0, top_k=1, max_output_tokens=200)`: Calls the Gemini API with the given prompt and parameters.
+
+4.  Implement Error Handling with Retry Logic:
+    *   Use `requests.exceptions.RequestException` to catch potential network errors.
+    *   Include a retry mechanism to increase the robustness of API calls.
+    *   Catch and display JSON parsing and API parsing errors.
+
+5.  Optimize for Gemini 2 Flash:
+    *   Default to the "gemini-2.0-flash" model for speed and lower cost.
+    *   Expose the `temperature`, `top_p`, `top_k`, and `max_output_tokens` parameters directly in `call_gemini_api` to allow tuning the output.
+    *   Use a temperature default value of 0.0 for predictable outputs when using tools.
+
+6.  Implement Robust JSON Parsing with Fallback:
+    *   Use `try...except` blocks for error detection during JSON parsing.
+    *   Use `.get()` calls for data to ensure no errors crash the script and return data, or `None`/empty string appropriately.
+
+7.  Refactor for Tool Calling:
+    *   Follow function naming conventions (lower_snake_case).
+    *   Format the tool invocation (call back into Gemini) correctly according to the newest recommended structure.
+    *   Use a dedicated fake function call to avoid external tool requirement dependency during example's unit testing.
+    *   Call the first level search of a function using JSON getter calls rather than array access.
+
+8.  Create Test Cases and Usage Examples:
+    *   Create a `test_gemini_api_wrapper` function to demonstrate different scenarios, including a basic prompt and a web search via a tool call with iterative re-injection based framing from a search.
+
+9.  Crucially Refactor and Include Sample Re-injection of Tool Usage:
+    *   Demonstrate how to re-inject the tool's response back into Gemini for a more complete answer.
+
+10. Ensure Clear Error Handling from JSON Errors in Web Return Information:
+    *   Catch empty responses in nested API structures or missing text data within parts.
+
+11. Show Concise Framing:
+    *   Demonstrate how to craft prompts leveraging retrieved content.
+    *   Easily switch and use other online web frameworks such as searx.
+
+12. Add Timeouts:
+    *   Add timeouts in case network calls get disrupted.
+
+13. How to Use This with Gemini 2 Flash and Tools:
+    *   Set up API Key: Set the GEMINI_API_KEY environment variable to your Google AI Studio API key. Use .env file or directly set.
+    *   Install Required Libraries: pip install requests python-dotenv
+    *   Define your Tool(s): Define the functions that implement the actions of your tool.
+    *   Example Usage with tool invoking and re-framing via Search results: The web-tool case illustrates invoking web results in Gemini with subsequent formatting
+    *   Adapt fake_web_search: The fake_web_search is critical and highlights this part is crucial, where code communicates to APIs
+    *   Important Re-injection into Gemini (post tool calling) Crucially note for all functions where you would re-invoke, provide results + old questions for proper framing! (Can also prompt for what is a good summary here)
+    *   Set other model, k top or temperature. Try modifying parameters! Note, this API is most designed with lower temperatures as tools work most predictably!
+    *   Set tokens properly. Can often return long amounts of data.
+
+14. Important Tool-Use Refactoring:
+    *   Crucially refactor and include sample re-injection of Tool Usage
+
+15. Clear Error handling from JSON errors in web return information:
+    *   Can catch empty response in nested API structures or missing text data within parts
+
+16. Concise Framing:
+    *   Shows how to craft prompts leveraging retrieved content.
+    *   Can easily switch and use other online web frameworks such as searx
+
+17. Adds timeouts in case network calls get disrupted
+
+18. Crucially note for all functions where you would re-invoke, provide results + old questions for proper framing! (Can also prompt for what is a good summary here)

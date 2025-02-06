@@ -1,0 +1,87 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written into a dist folder.
+#  See https://github.com/pyinstaller/pyinstaller/blob/stable/installer/hooks/rthooks/pyi_rth_multiprocessing.py#L16
+# _MEIPASS2 is a temporary folder created by pyInstaller
+_MEIPASS2/
+*.manifest
+*.spec
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Spyder project
+.spyderproject
+.spyproject
+
+# Rope project
+.ropeproject
+
+# mkdocs
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# flake8
+.flake8
+
+# pytype
+.pytype/
+
+# OpenAI files
+.openai
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# General
+*.[swp|swo|swn]
+*.DS_Store
