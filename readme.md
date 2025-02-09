@@ -311,6 +311,27 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 
 ## Contributing
 
+## GRPOtuned Math Problem Solver Integration and Inference Providers
+
+This project now includes two new integrations leveraging the fine-tuned model "HarleyCooper/GRPOtuned" for solving math problems. The model, a fine-tuned version of Qwen2.5-0.5B-Instruct, is designed to produce reasoning steps and a final answer in an XML format (with tags like <reasoning> and <answer>).
+
+There are two approaches implemented:
+
+1. **High-Level Pipeline Integration:**  
+   The script `hf_grpotuned_pipeline.py` demonstrates the use of the Transformers pipeline interface  
+   (via `pipeline("text-generation", model="HarleyCooper/GRPOtuned")`) to generate math problem solutions.  
+   This approach offers simplicity and ease-of-use for quickly testing the model's capabilities.
+
+2. **Direct Model Loading:**  
+   The script `direct_hf_grpotuned.py` shows a more direct integration by explicitly loading the model and tokenizer  
+   using `AutoTokenizer` and `AutoModelForCausalLM`. This method provides greater control over tokenization and generation parameters.
+
+### Using Inference Providers
+
+At present, only the direct Hugging Face integration (via direct_hf_grpotuned.py) reliably supports your custom fine-tuned math model. The experimental demo in inference_providers_demo.py is provided as a preview of future capabilities when external inference providers (Together AI, Replicate, SambaNova, Fal AI, etc.) fully support custom Qwen2.5 models for conversational tasks. For now, use the direct integration for production use. Future updates will expand support for inference providers, and this section will be updated accordingly.
+
+This documentation aims to provide both a fun and practical introduction to these new capabilities, making it easy for you to experiment and integrate advanced inference features into your projects.
+
 Contributions are welcome! Please feel free to submit pull requests or open issues to suggest improvements or report bugs.
 
 ## Next Steps: Resolving Dependency Conflicts with vLLM
