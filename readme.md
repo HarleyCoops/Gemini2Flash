@@ -345,10 +345,10 @@ Here's a summary of the steps we've taken:
 3.  Tried explicitly specifying the PyTorch framework.
 4.  Attempted to upgrade and downgrade NumPy to resolve version conflicts.
 
-The current approach involves using a Dockerfile to create an isolated environment with the correct versions of all necessary libraries. This should provide a more reliable and reproducible setup for running vLLM.
+The current approach involves using a Dockerfile (but not required and not woring yet) to create an isolated environment with the correct versions of all necessary libraries. 
 
 ## Acknowledgements
 
 This project was inspired by the amazing work of the Google AI team and the vibrant community of AI developers. We are grateful for their contributions to the field.
 
-**Now go forth and build amazing things with the Gemini Powerhouse!**
+**  {-christiann}**
